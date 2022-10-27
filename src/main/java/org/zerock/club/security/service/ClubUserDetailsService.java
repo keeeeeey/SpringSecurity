@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ClubUserDetailsService implements UserDetailsService {
 
-    private ClubMemberRepository clubMemberRepository;
+    private final ClubMemberRepository clubMemberRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
