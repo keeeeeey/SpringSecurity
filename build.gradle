@@ -33,6 +33,10 @@ dependencies {
 
 	// Oauth2
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	// JsonWebToken
+	implementation group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
+
 }
 
 tasks.named('test') {
