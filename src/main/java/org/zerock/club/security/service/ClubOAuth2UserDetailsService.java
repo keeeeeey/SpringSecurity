@@ -2,6 +2,7 @@ package org.zerock.club.security.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -48,6 +49,8 @@ public class ClubOAuth2UserDetailsService extends DefaultOAuth2UserService {
 
         if (clientName.equals("Google")) {
             email = oAuth2User.getAttribute("email");
+        } else if (clientName.equals("kakao")) {
+            email = oAuth2User.getAttribute("kakao_account");
         }
 
         log.info("EMAIL: " + email);
@@ -78,10 +81,12 @@ public class ClubOAuth2UserDetailsService extends DefaultOAuth2UserService {
             return result.get();
         }
 
+        String password = getRandomPassword(12);
+
         ClubMember clubMember = ClubMember.builder()
                 .email(email)
                 .name(email)
-                .password(passwordEncoder.encode("1111"))
+                .password(passwordEncoder.encode(password))
                 .fromSocial(true)
                 .build();
 
@@ -90,5 +95,9 @@ public class ClubOAuth2UserDetailsService extends DefaultOAuth2UserService {
         clubMemberRepository.save(clubMember);
 
         return clubMember;
+    }
+
+    private String getRandomPassword(int size) {
+        return RandomStringUtils.randomAlphanumeric(size);
     }
 }

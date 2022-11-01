@@ -10,7 +10,7 @@ import org.zerock.club.security.dto.ClubAuthMemberDTO;
 
 @Controller
 @Log4j2
-@RequestMapping("/sample/")
+@RequestMapping("/sample")
 public class SampleController {
 
     @PreAuthorize("permitAll()")

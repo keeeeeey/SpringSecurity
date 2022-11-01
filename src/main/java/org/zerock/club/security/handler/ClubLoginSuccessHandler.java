@@ -47,7 +47,7 @@ public class ClubLoginSuccessHandler implements AuthenticationSuccessHandler {
 //        }
 
         if (fromSocial) {
-            redirectStrategy.sendRedirect(request, response, "/api/socialLogin/" + username);
+            redirectStrategy.sendRedirect(request, response, "/api/socialLogin");
         }
 
     }
