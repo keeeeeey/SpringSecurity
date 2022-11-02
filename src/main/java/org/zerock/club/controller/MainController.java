@@ -6,10 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.zerock.club.dto.LoginRequestDTO;
 import org.zerock.club.security.dto.ClubAuthMemberDTO;
 import org.zerock.club.security.util.JWTUtil;
 
@@ -24,11 +22,15 @@ public class MainController {
 
     private final JWTUtil jwtUtil;
 
+    @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<String> login(@RequestBody LoginRequestDTO requestDTO) {
+        String accessToken = jwtUtil.createToken(requestDTO.getEmail());
+        return new ResponseEntity<>(accessToken, HttpStatus.OK);
+    }
+
     @GetMapping(value = "/socialLogin", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> socialLogin(@AuthenticationPrincipal ClubAuthMemberDTO clubAuthMember) throws Exception {
-
-        System.out.println(clubAuthMember.getEmail());
-        String accessToken = jwtUtil.generateToken(clubAuthMember.getEmail());
+        String accessToken = jwtUtil.createToken(clubAuthMember.getEmail());
         return new ResponseEntity<>(accessToken, HttpStatus.OK);
     }
 

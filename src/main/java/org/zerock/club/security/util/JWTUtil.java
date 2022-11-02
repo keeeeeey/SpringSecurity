@@ -1,56 +1,74 @@
 package org.zerock.club.security.util;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.DefaultClaims;
-import io.jsonwebtoken.impl.DefaultJws;
-import lombok.extern.log4j.Log4j2;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
-import java.time.ZonedDateTime;
+import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Base64;
 import java.util.Date;
+import java.util.List;
 
-@Log4j2
+@RequiredArgsConstructor
+@Component
 public class JWTUtil {
+    private String secretKey = "myprojectsecret";
 
-    private String secretKey = "zero1234567";
+    // 토큰 유효시간 30분
+    private long tokenValidTime = 30 * 60 * 1000L;
 
-    private long expire = 60 * 24 * 30;
+    private final UserDetailsService userDetailsService;
 
-    public String generateToken(String content) throws Exception {
+    // 객체 초기화, secretKey를 Base64로 인코딩한다.
+    @PostConstruct
+    protected void init() {
+        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+    }
 
+    // JWT 토큰 생성
+    public String createToken(String email) {
+        Claims claims = Jwts.claims().setSubject(email); // JWT payload 에 저장되는 정보단위, 보통 여기서 user를 식별하는 값을 넣는다.
+        Date now = new Date();
         return Jwts.builder()
-                .setIssuedAt(new Date())
-                .setExpiration(Date.from(ZonedDateTime.now().plusMinutes(expire).toInstant()))
-                .claim("sub", content)
-                .signWith(SignatureAlgorithm.HS256, secretKey.getBytes("UTF-8"))
+                .setClaims(claims) // 정보 저장
+                .setIssuedAt(now) // 토큰 발행 시간 정보
+                .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
+                .signWith(SignatureAlgorithm.HS256, secretKey)  // 사용할 암호화 알고리즘과
+                // signature 에 들어갈 secret값 세팅
                 .compact();
     }
 
-    public String validateAndExtract(String tokenStr) throws Exception {
-        String contentValue = null;
+    // JWT 토큰에서 인증 정보 조회
+    public Authentication getAuthentication(String token) {
+        UserDetails userDetails = userDetailsService.loadUserByUsername(this.getUserPk(token));
+        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+    }
 
+    // 토큰에서 회원 정보 추출
+    public String getUserPk(String token) {
+        return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+    }
+
+    // Request의 Header에서 token 값을 가져옵니다. "Authorization" : "TOKEN값'
+    public String resolveToken(HttpServletRequest request) {
+        return request.getHeader("Authorization");
+    }
+
+    // 토큰의 유효성 + 만료일자 확인
+    public boolean validateToken(String jwtToken) {
         try {
-            DefaultJws defaultJws = (DefaultJws) Jwts.parser()
-                    .setSigningKey(secretKey.getBytes("UTF-8"))
-                    .parseClaimsJws(tokenStr);
-
-            log.info(defaultJws);
-
-            log.info(defaultJws.getBody().getClass());
-
-            DefaultClaims claims = (DefaultClaims) defaultJws.getBody();
-
-            log.info("-----------------------------");
-
-            contentValue = claims.getSubject();
-
+            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
+            return !claims.getBody().getExpiration().before(new Date());
         } catch (Exception e) {
-            e.printStackTrace();
-            log.error(e.getMessage());
-            contentValue = null;
+            return false;
         }
-
-        return contentValue;
     }
 }

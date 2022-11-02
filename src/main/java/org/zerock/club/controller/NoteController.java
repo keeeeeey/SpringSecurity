@@ -5,8 +5,10 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.zerock.club.dto.NoteDTO;
+import org.zerock.club.security.dto.ClubAuthMemberDTO;
 import org.zerock.club.service.NoteService;
 
 import java.util.List;
@@ -20,10 +22,12 @@ public class NoteController {
     private final NoteService noteService;
 
     @PostMapping(value = "")
-    public ResponseEntity<Long> register(@RequestBody NoteDTO noteDTO) {
+    public ResponseEntity<Long> register(@RequestBody NoteDTO noteDTO,
+                                         @AuthenticationPrincipal ClubAuthMemberDTO clubAuthMember) {
 
         log.info("--------------------register--------------------");
         log.info(noteDTO);
+        log.info(clubAuthMember.getEmail());
 
         Long num = noteService.register(noteDTO);
 
