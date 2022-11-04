@@ -28,10 +28,4 @@ public class MainController {
         return new ResponseEntity<>(accessToken, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/socialLogin", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<String> socialLogin(@AuthenticationPrincipal ClubAuthMemberDTO clubAuthMember) throws Exception {
-        String accessToken = jwtUtil.createToken(clubAuthMember.getEmail());
-        return new ResponseEntity<>(accessToken, HttpStatus.OK);
-    }
-
 }
