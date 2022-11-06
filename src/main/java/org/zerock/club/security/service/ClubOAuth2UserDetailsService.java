@@ -5,7 +5,6 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -26,8 +25,6 @@ import java.util.stream.Collectors;
 public class ClubOAuth2UserDetailsService extends DefaultOAuth2UserService {
 
     private final ClubMemberRepository clubMemberRepository;
-
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -89,7 +86,7 @@ public class ClubOAuth2UserDetailsService extends DefaultOAuth2UserService {
         ClubMember clubMember = ClubMember.builder()
                 .email(email)
                 .name(email)
-                .password(passwordEncoder.encode(password))
+                .password(new BCryptPasswordEncoder().encode(password))
                 .fromSocial(true)
                 .build();
 
