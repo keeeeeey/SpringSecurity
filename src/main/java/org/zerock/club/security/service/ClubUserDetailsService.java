@@ -11,7 +11,6 @@ import org.zerock.club.entity.ClubMember;
 import org.zerock.club.repository.ClubMemberRepository;
 import org.zerock.club.security.dto.ClubAuthMemberDTO;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Log4j2
@@ -26,7 +25,7 @@ public class ClubUserDetailsService implements UserDetailsService {
 
         log.info("ClubUserDetailsService loadUserByUsername " + username);
 
-        ClubMember clubMember = clubMemberRepository.findByEmail(username, false)
+        ClubMember clubMember = clubMemberRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Check Email or Social"));
 
         ClubAuthMemberDTO clubAuthMemberDTO = new ClubAuthMemberDTO(
