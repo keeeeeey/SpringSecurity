@@ -53,7 +53,11 @@ public class JWTUtil {
     }
 
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("Authorization").substring(7);
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 
     // 토큰의 유효성 + 만료일자 확인

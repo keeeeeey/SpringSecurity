@@ -8,9 +8,9 @@ spring:
             client-secret: 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
             scope: email
           kakao:
-            client-id: 16ca285777b6539ee18748fc388cecf9
-            client-secret: PmJc2NAO9TvDBcK8lb9MhD4LVulQLXUn
-            redirect-uri: http://localhost:8081/login/oauth2/code/kakao
+            client-id: 9d1f2abed3ce46931ff7abf4b7f8a31a
+            client-secret: iMWiBMuZMA4uakDWL7wVrVFE5xjmh18C
+            redirect-uri: http://localhost:8080/login/oauth2/code/kakao
             authorization-grant-type: authorization_code
             client-authentication-method: POST
             client-name: Kakao

@@ -42,17 +42,17 @@ public class SecurityConfig {
                 .csrf().disable()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
+                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
-                .antMatchers("/sample/all").permitAll()
-                .antMatchers("/api/**").permitAll()
-                .antMatchers(HttpMethod.GET,"/notes/**").permitAll()
-                .antMatchers("/sample/member").hasRole("USER")
-                .antMatchers("/notes").hasRole("User")
+                .antMatchers(HttpMethod.GET, "/sample/all").permitAll()
+//                .antMatchers("/api/**").permitAll()
+//                .antMatchers(HttpMethod.GET,"/notes/**").permitAll()
+//                .antMatchers("/sample/member").hasRole("USER")
+//                .antMatchers("/notes").hasRole("User")
+//                .anyRequest().authenticated()
                 .anyRequest().authenticated()
                 .and()
-                .oauth2Login().userInfoEndpoint().userService(clubOAuth2UserDetailsService).and().successHandler(successHandler())
-                .and()
-                .addFilterBefore(new JwtAuthenticationFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+                .oauth2Login().userInfoEndpoint().userService(clubOAuth2UserDetailsService).and().successHandler(successHandler());
 
         return http.build();
     }
